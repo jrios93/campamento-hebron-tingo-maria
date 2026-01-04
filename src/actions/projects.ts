@@ -1,11 +1,20 @@
-"use server"
 
-import { youthSchema } from "@/schemas/project"
+import { coupleSchema, youthSchema } from "@/schemas/project"
 import z from "zod"
 
-export async function createProject(unsafeData: z.infer<typeof youthSchema>) {
-  const data = youthSchema.safeParse(unsafeData)
+type ProjectData = z.infer<typeof coupleSchema> | z.infer<typeof youthSchema>
 
-  if (!data.success) return { succes: false }
+export async function createProject(unsafeData: ProjectData) {
+  let parseResult
+
+  // Detectar qué schema usar
+  if ('husbandFirstName' in unsafeData) {
+    parseResult = coupleSchema.safeParse(unsafeData)
+  } else {
+    parseResult = youthSchema.safeParse(unsafeData)
+  }
+
+  if (!parseResult.success) return { success: false }
   return { success: true }
 }
+

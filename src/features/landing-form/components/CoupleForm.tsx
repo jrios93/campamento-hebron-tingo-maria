@@ -5,10 +5,9 @@ import { coupleSchema } from "@/schemas/project"
 import z from "zod"
 import { createProject } from "@/actions/projects"
 import { toast } from "sonner"
-import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 
 export const CoupleForm = () => {
