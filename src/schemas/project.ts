@@ -13,8 +13,8 @@ export const baseSchema = z.object({
     .string()
     .email("Correo electrónico inválido"),
 
-  travelMode: z.enum(["movilidad", "bus"], {
-    required_error: "Debes seleccionar un modo de viaje",
+  travelMode: z.enum(["movilidad", "bus"] as const, {
+    message: "Debes seleccionar un modo de viaje",
   }),
 })
 

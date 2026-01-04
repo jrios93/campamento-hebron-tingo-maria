@@ -2,8 +2,11 @@ import campmentTingo from "/campment/campamento_tingo.jpg"
 
 export const ImageLayout = () => {
   return (
-    <div className=" p-6 space-y-6 ">
-      <img src={campmentTingo} />
+    <div className=" p-0 space-y-0 md:p-6 md:space-y-6 ">
+      <div>
+        <img src={campmentTingo} className="backdrop-invert-0" />
+        <div className="bg-white/30 backdrop-blur-sm inset-0"></div>
+      </div>
       <div className="hidden md:block">
         <h2 className="text-xl font-semibold mb-4">Estimados hermanos en Cristo</h2>
         <p className="mb-4">
