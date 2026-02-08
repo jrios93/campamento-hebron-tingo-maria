@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { Package, Shirt, Book, Shield, PenTool, Bubbles, ScrollText, BedDouble, Footprints, SprayCan, Church } from "lucide-react"
+import { Shirt, Book, PenTool, Bubbles, ScrollText, BedDouble, Footprints, SprayCan, Church } from "lucide-react"
 
 export const ChecklistSection = () => {
   const items = [

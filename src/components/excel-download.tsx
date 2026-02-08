@@ -41,21 +41,21 @@ interface ExcelDownloadButtonProps {
   onDownloadComplete?: () => void
 }
 
-export function ExcelDownloadButton({ 
-  youths = [], 
+export function ExcelDownloadButton({
+  youths = [],
   couples = [],
   onDownloadStart,
-  onDownloadComplete 
+  onDownloadComplete
 }: ExcelDownloadButtonProps) {
   const [isDownloading, setIsDownloading] = useState(false)
 
   // Convertir fecha a formato DD/MM/YYYY
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('es-ES', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     })
   }
 
@@ -81,7 +81,7 @@ export function ExcelDownloadButton({
       'Correo Electrónico',
       'Modalidad de Viaje',
       'Nombre de la Pareja',
-      'DNI de la Pareja', 
+      'DNI de la Pareja',
       'Fecha de Nacimiento Pareja',
       'Edad de la Pareja',
       'Cantidad de Hijos',
@@ -133,7 +133,7 @@ export function ExcelDownloadButton({
     // Convertir a CSV
     const csvContent = [
       headers.join(','),
-      ...allData.map(row => 
+      ...allData.map(row =>
         row.map(cell => {
           // Escapar comas y quotes
           const cellStr = String(cell || '').replace(/"/g, '""')
@@ -152,38 +152,38 @@ export function ExcelDownloadButton({
       onDownloadStart?.()
 
       const csvContent = convertToCSV()
-      
+
       // Crear blob con BOM para Excel (para caracteres especiales)
       const BOM = '\uFEFF'
-      const blob = new Blob([BOM + csvContent], { 
-        type: 'text/csv;charset=utf-8;' 
+      const blob = new Blob([BOM + csvContent], {
+        type: 'text/csv;charset=utf-8;'
       })
 
       // Crear link de descarga
       const link = document.createElement('a')
       const url = URL.createObjectURL(blob)
-      
+
       // Generar nombre de archivo con fecha actual
       const now = new Date()
-      const dateStr = now.toLocaleDateString('es-ES', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric' 
+      const dateStr = now.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
       }).replace(/\//g, '-')
-      
+
       link.setAttribute('href', url)
       link.setAttribute('download', `inscripciones-campamento-${dateStr}.csv`)
       link.style.visibility = 'hidden'
-      
+
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-      
+
       // Limpiar URL
       URL.revokeObjectURL(url)
-      
+
       onDownloadComplete?.()
-      
+
     } catch (error) {
       console.error('Error al descargar archivo:', error)
       alert('Error al descargar el archivo. Por favor intenta nuevamente.')
@@ -193,14 +193,14 @@ export function ExcelDownloadButton({
   }
 
   const totalRecords = youths.length + couples.length
-  const totalPeople = youths.length + 
-    couples.reduce((sum, couple) => {
-      const basePeople = couple.has_partner ? 2 : 1
-      return sum + basePeople + (couple.children_count || 0)
-    }, 0)
-
+  // const totalPeople = youths.length + 
+  //   couples.reduce((sum, couple) => {
+  //     const basePeople = couple.has_partner ? 2 : 1
+  //     return sum + basePeople + (couple.children_count || 0)
+  //   }, 0)
+  //
   return (
-    <Button 
+    <Button
       onClick={downloadExcel}
       disabled={isDownloading || totalRecords === 0}
       className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
@@ -224,7 +224,7 @@ export function ExcelDownloadButton({
 // Componente de estadísticas para el dashboard
 export function DownloadStats({ youths, couples }: { youths: YouthRegistration[], couples: CoupleRegistration[] }) {
   const totalRecords = youths.length + couples.length
-  const totalPeople = youths.length + 
+  const totalPeople = youths.length +
     couples.reduce((sum, couple) => {
       const basePeople = couple.has_partner ? 2 : 1
       return sum + basePeople + (couple.children_count || 0)
