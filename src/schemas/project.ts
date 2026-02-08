@@ -1,17 +1,32 @@
-
 import { z } from "zod"
 
 /* ======================================================
    SCHEMA BASE (CAMPOS COMPARTIDOS)
    ====================================================== */
 export const baseSchema = z.object({
+  dni: z
+    .string()
+    .regex(/^\d{8}$/, "El DNI debe tener 8 dígitos")
+    .optional()
+    .or(z.literal("")),
+
+  birthDate: z
+    .string()
+    .min(1, "La fecha de nacimiento es obligatoria")
+    .refine(date => {
+      const parsed = new Date(date);
+      return !isNaN(parsed.getTime()) && parsed < new Date();
+    }, "La fecha de nacimiento debe ser válida y anterior a hoy"),
+
   phone: z
     .string()
     .regex(/^\d{9}$/, "El celular debe tener 9 dígitos"),
 
   email: z
     .string()
-    .email("Correo electrónico inválido"),
+    .email("Correo electrónico inválido")
+    .optional()
+    .or(z.literal("")),
 
   travelMode: z.enum(["movilidad", "bus"] as const, {
     message: "Debes seleccionar un modo de viaje",
@@ -24,72 +39,101 @@ export const baseSchema = z.object({
 export const youthSchema = baseSchema.extend({
   fullName: z
     .string()
-    .min(1, "El nombre y apellido es obligatorio").regex(/^[\p{L}'’\- ]+$/u
-      , "Solo letras, espacios, guiones o apóstrofes"),
+    .min(1, "El nombre y apellido es obligatorio")
+    .regex(/^[\p{L}'’\- ]+$/u, "Solo letras, espacios, guiones o apóstrofes"),
 
-  age: z
+  birthDate: z
     .string()
-    .min(1, "La edad es obligatoria")
-    .regex(/^\d+$/, "La edad debe ser un número")
-    .refine(age => {
-      const n = Number(age)
-      return n >= 12 && n <= 30
-    }, {
-      message: "La edad debe estar entre 12 y 30 años",
-    }),
+    .min(1, "La fecha de nacimiento es obligatoria")
+    .refine(date => {
+      const parsed = new Date(date);
+      const today = new Date();
+      const age = today.getFullYear() - parsed.getFullYear();
+      const monthDiff = today.getMonth() - parsed.getMonth();
+      const dayDiff = today.getDate() - parsed.getDate();
+
+      const actualAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+
+      return !isNaN(parsed.getTime()) && parsed < today && actualAge >= 12 && actualAge <= 40;
+    }, "La edad debe estar entre 12 y 30 años"),
 })
 
 /* ======================================================
    SCHEMA MATRIMONIO
    ====================================================== */
 export const coupleSchema = baseSchema.extend({
-  /* ---------- ESPOSO ---------- */
-  husbandFirstName: z
+  /* ---------- DATOS DEL PARTICIPANTE PRINCIPAL ---------- */
+  firstName: z
     .string()
-    .min(1, "El nombre del esposo es obligatorio").regex(/^[\p{L}'’\- ]+$/u
-      , "Solo letras, espacios, guiones o apóstrofes"),
+    .min(1, "El nombre es obligatorio")
+    .regex(/^[\p{L}'’\- ]+$/u, "Solo letras, espacios, guiones o apóstrofes"),
 
-
-  husbandLastName: z
+  lastName: z
     .string()
-    .min(1, "El apellido del esposo es obligatorio").regex(/^[\p{L}'’\- ]+$/u
-      , "Solo letras, espacios, guiones o apóstrofes"),
+    .min(1, "El apellido es obligatorio")
+    .regex(/^[\p{L}'’\- ]+$/u, "Solo letras, espacios, guiones o apóstrofes"),
 
-
-  husbandAge: z
+  birthDate: z
     .string()
-    .min(1, "La edad del esposo es obligatoria")
-    .regex(/^\d+$/, "La edad debe ser un número")
-    .refine(age => Number(age) >= 18, {
-      message: "La edad debe ser mayor de 18 años",
-    }),
+    .min(1, "La fecha de nacimiento es obligatoria")
+    .refine(date => {
+      const parsed = new Date(date);
+      const today = new Date();
+      const age = today.getFullYear() - parsed.getFullYear();
+      const monthDiff = today.getMonth() - parsed.getMonth();
+      const dayDiff = today.getDate() - parsed.getDate();
 
-  /* ---------- ESPOSA ---------- */
-  wifeFirstName: z
-    .string()
-    .min(1, "El nombre de la esposa es obligatorio").regex(/^[\p{L}'’\- ]+$/u
-      , "Solo letras, espacios, guiones o apóstrofes"),
+      const actualAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
 
-  wifeLastName: z
-    .string()
-    .min(1, "El apellido de la esposa es obligatorio").regex(/^[\p{L}'’\- ]+$/u
-      , "Solo letras, espacios, guiones o apóstrofes"),
+      return !isNaN(parsed.getTime()) && parsed < today && actualAge >= 18;
+    }, "Debes ser mayor de 18 años"),
 
-  wifeAge: z
+  /* ---------- ¿VIENE ACOMPAÑADO? ---------- */
+  hasPartner: z.boolean(),
+
+  /* ---------- DATOS DE LA PAREJA ---------- */
+  partnerFirstName: z
     .string()
-    .min(1, "La edad de la esposa es obligatoria")
-    .regex(/^\d+$/, "La edad debe ser un número")
-    .refine(age => Number(age) >= 18, {
-      message: "La edad debe ser mayor de 18 años",
+    .regex(/^[\p{L}'’\- ]*$/u, "Solo letras, espacios, guiones o apóstrofes")
+    .optional(),
+
+  partnerLastName: z
+    .string()
+    .regex(/^[\p{L}'’\- ]*$/u, "Solo letras, espacios, guiones o apóstrofes")
+    .optional(),
+
+  partnerDni: z
+    .string()
+    .regex(/^\d{8}$/, "El DNI debe tener 8 dígitos")
+    .optional()
+    .or(z.literal("")),
+
+  partnerBirthDate: z
+    .string()
+    .optional()
+    .refine((date: string | undefined) => !date || (
+      !isNaN(new Date(date).getTime()) &&
+      new Date(date) < new Date() &&
+      (new Date().getFullYear() - new Date(date).getFullYear() >= 18)
+    ), {
+      message: "La pareja debe ser mayor de 18 años",
     }),
 
   /* ---------- HIJOS ---------- */
-
   childrenCount: z
     .number({ message: "Debes indicar cuántos niños te acompañan" })
     .min(0, "No puede ser menor que 0")
     .max(10, "No puede ser mayor que 10")
     .optional(),
 
+}).refine(data => {
+  // Si tiene pareja, los campos de la pareja son obligatorios
+  if (data.hasPartner) {
+    return data.partnerFirstName && data.partnerLastName &&
+      data.partnerDni && data.partnerBirthDate;
+  }
+  return true;
+}, {
+  message: "Los datos de la pareja son obligatorios cuando selecciona que viene acompañado",
+  path: ["partnerFirstName"],
 })
-

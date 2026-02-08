@@ -46,7 +46,7 @@ export function SideBySideForm() {
 
                 {/* Costo */}
                 <p className="font-medium">
-                  Costo por campamentista: <span className="font-semibold">S/ 80</span>
+                  Costo por campamentista: <span className="font-semibold">S/ 100</span>
                 </p>
 
                 {/* Acción */}
@@ -61,21 +61,6 @@ export function SideBySideForm() {
               <YouthForm />
             </CardContent>
 
-            <CardFooter className="flex flex-col items-start space-y-2">
-              <p className="font-medium text-sm uppercase tracking-wide">Información importante</p>
-
-              <p className="text-sm text-muted-foreground">
-                Cada campamentista deberá traer:
-              </p>
-
-              <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
-                <li>Útiles de aseo personal</li>
-                <li>Colcha y sábana</li>
-                <li>Ropa deportiva y ropa de vestir</li>
-                <li>Repelente</li>
-                <li>Biblia, cuaderno y lapicero</li>
-              </ul>
-            </CardFooter>
 
 
           </Card>
@@ -97,7 +82,7 @@ export function SideBySideForm() {
 
                 {/* Costo */}
                 <p className="font-medium">
-                  Costo por campamentista: <span className="font-semibold">S/ 80</span>
+                  Costo por Matrimonio(pareja): <span className="font-semibold">S/ 200</span>
                 </p>
 
                 {/* Acción */}
