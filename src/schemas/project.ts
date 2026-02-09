@@ -47,7 +47,7 @@ export const youthSchema = baseSchema.extend({
     .min(1, "La fecha de nacimiento es obligatoria")
     .refine(date => {
       let parsed: Date;
-      
+
       // Intentar formato YYYY-MM-DD (backend) o DD/MM/YYYY (frontend)
       if (date.includes('-')) {
         // Formato YYYY-MM-DD
@@ -56,19 +56,19 @@ export const youthSchema = baseSchema.extend({
         // Formato DD/MM/YYYY
         const parts = date.split('/');
         if (parts.length !== 3) return false;
-        
+
         const [dd, mm, yyyy] = parts;
         const day = parseInt(dd);
         const month = parseInt(mm);
         const year = parseInt(yyyy);
-        
+
         if (day > 31 || month > 12 || year < 1900 || year > 2100) return false;
-        
+
         parsed = new Date(`${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
       } else {
         return false;
       }
-      
+
       const today = new Date();
       const age = today.getFullYear() - parsed.getFullYear();
       const monthDiff = today.getMonth() - parsed.getMonth();
@@ -76,8 +76,8 @@ export const youthSchema = baseSchema.extend({
 
       const actualAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
 
-      return !isNaN(parsed.getTime()) && parsed < today && actualAge >= 12 && actualAge <= 40;
-    }, "La edad debe estar entre 12 y 40 años"),
+      return !isNaN(parsed.getTime()) && parsed < today && actualAge >= 10 && actualAge <= 40;
+    }, "La edad debe estar entre 10 y 40 años"),
 })
 
 /* ======================================================

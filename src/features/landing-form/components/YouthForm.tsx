@@ -29,9 +29,7 @@ export const YouthForm = () => {
 
   const { handleSubmit, formState, watch, register } = form
   const { errors } = formState
-  
-  // Log para depuración
-  console.log("Errores de validación:", errors)
+
 
   const dniValue = watch("dni")
   const phoneValue = watch("phone")
@@ -99,15 +97,13 @@ export const YouthForm = () => {
   }
 
   async function onSubmit(data: z.infer<typeof youthSchema>) {
-    console.log("Datos del formulario:", data)
-    
+
     // Convertir la fecha antes de enviar
     const formattedData = {
       ...data,
       birthDate: convertDateFormat(data.birthDate)
     }
-    
-    console.log("Datos convertidos:", formattedData)
+
 
     const res = await createProject(formattedData)
     if (res.success) {
@@ -166,7 +162,7 @@ export const YouthForm = () => {
             />
             <FieldError errors={[errors.birthDate]} />
             <p className="text-xs text-muted-foreground mt-1">
-              * Formato: Día/Mes/Año (ej: 15/01/2010) - Para jóvenes de 12 a 40 años
+              * Formato: Día/Mes/Año (ej: 15/01/2010) - Para jóvenes de 10 a 40 años
             </p>
           </Field>
         </fieldset>
@@ -216,7 +212,7 @@ export const YouthForm = () => {
           <p className="font-medium mb-1">Información importante:</p>
           <ul className="list-disc list-inside space-y-1 text-xs">
             <li>Los campos marcados con * son obligatorios</li>
-            <li>La fecha de nacimiento debe ser real (se validará la edad entre 12 y 30 años)</li>
+            <li>La fecha de nacimiento debe ser real (se validará la edad entre 10 y 30 años)</li>
             <li>Formato de fecha: DD/MM/AAAA (día/mes/año)</li>
             <li>Si no tienes DNI por ser extranjero, puedes dejar el campo vacío</li>
             <li>El correo electrónico es opcional pero recomendado para recibir notificaciones</li>
