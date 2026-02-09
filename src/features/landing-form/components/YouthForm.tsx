@@ -29,6 +29,9 @@ export const YouthForm = () => {
 
   const { handleSubmit, formState, watch, register } = form
   const { errors } = formState
+  
+  // Log para depuración
+  console.log("Errores de validación:", errors)
 
   const dniValue = watch("dni")
   const phoneValue = watch("phone")
@@ -70,38 +73,42 @@ export const YouthForm = () => {
   // Función para convertir DD/MM/YYYY a YYYY-MM-DD
   const convertDateFormat = (dateString: string) => {
     if (!dateString) return ""
-    
+
     // Remover todo excepto números y barras
     const cleaned = dateString.replace(/[^\d/]/g, '')
-    
+
     // Dividir la fecha
     const parts = cleaned.split('/')
-    
+
     // Verificar que tengamos día, mes y año
     if (parts.length !== 3) return dateString
-    
+
     const [dd, mm, yyyy] = parts
-    
+
     // Validar rangos
     const day = parseInt(dd)
     const month = parseInt(mm)
     const year = parseInt(yyyy)
-    
+
     if (day > 31 || month > 12 || year < 1900 || year > 2100) {
       return dateString
     }
-    
+
     // Retornar en formato YYYY-MM-DD para el backend
     return `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
   }
 
   async function onSubmit(data: z.infer<typeof youthSchema>) {
+    console.log("Datos del formulario:", data)
+    
     // Convertir la fecha antes de enviar
     const formattedData = {
       ...data,
       birthDate: convertDateFormat(data.birthDate)
     }
     
+    console.log("Datos convertidos:", formattedData)
+
     const res = await createProject(formattedData)
     if (res.success) {
       form.reset()
@@ -119,15 +126,15 @@ export const YouthForm = () => {
         {/* Datos del joven */}
         <fieldset className="border rounded-md p-4 space-y-4">
           <legend className="font-semibold text-lg px-2">Datos del participante</legend>
-          
+
           {/* Documento de Identidad primero */}
           <Field data-invalid={!!errors.dni || !!dniError}>
             <FieldLabel htmlFor="dni">Documento de Identidad (DNI) - Opcional</FieldLabel>
-            <Input 
-              id="dni" 
-              inputMode="numeric" 
-              maxLength={8} 
-              {...register("dni")} 
+            <Input
+              id="dni"
+              inputMode="numeric"
+              maxLength={8}
+              {...register("dni")}
               className="w-full"
               placeholder="Ej: 12345678"
             />
@@ -147,19 +154,19 @@ export const YouthForm = () => {
             <Input id="fullName" {...register("fullName")} className="w-full" />
             <FieldError errors={[errors.fullName]} />
           </Field>
-          
+
           <Field data-invalid={!!errors.birthDate}>
             <FieldLabel htmlFor="birthDate">Fecha de Nacimiento *</FieldLabel>
-            <Input 
-              id="birthDate" 
+            <Input
+              id="birthDate"
               type="text"
-              {...register("birthDate")} 
+              {...register("birthDate")}
               className="w-full"
               placeholder="DD/MM/AAAA (ej: 15/01/2010)"
             />
             <FieldError errors={[errors.birthDate]} />
             <p className="text-xs text-muted-foreground mt-1">
-              * Formato: Día/Mes/Año (ej: 15/01/2010) - Para jóvenes de 12 a 30 años
+              * Formato: Día/Mes/Año (ej: 15/01/2010) - Para jóvenes de 12 a 40 años
             </p>
           </Field>
         </fieldset>
@@ -169,10 +176,10 @@ export const YouthForm = () => {
           <legend className="font-semibold text-lg px-2">Datos de contacto</legend>
           <Field data-invalid={!!errors.phone || !!phoneError}>
             <FieldLabel htmlFor="phone">Celular *</FieldLabel>
-            <Input 
-              id="phone" 
-              inputMode="numeric" 
-              {...register("phone")} 
+            <Input
+              id="phone"
+              inputMode="numeric"
+              {...register("phone")}
               className="w-full"
               placeholder="Ej: 987654321"
             />
@@ -216,8 +223,8 @@ export const YouthForm = () => {
           </ul>
         </div>
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="w-full"
           disabled={isValidating || !!dniError || !!phoneError}
         >
