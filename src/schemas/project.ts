@@ -116,12 +116,14 @@ export const coupleSchema = baseSchema.extend({
   /* ---------- DATOS DE LA PAREJA ---------- */
   partnerFirstName: z
     .string()
-    .regex(/^[\p{L}'’\- ]*$/u, "Solo letras, espacios, guiones o apóstrofes")
+    .min(1, "El nombre de la pareja es obligatorio")
+    .regex(/^[\p{L}'’\- ]+$/u, "Solo letras, espacios, guiones o apóstrofes")
     .optional(),
 
   partnerLastName: z
     .string()
-    .regex(/^[\p{L}'’\- ]*$/u, "Solo letras, espacios, guiones o apóstrofes")
+    .min(1, "El apellido de la pareja es obligatorio")
+    .regex(/^[\p{L}'’\- ]+$/u, "Solo letras, espacios, guiones o apóstrofes")
     .optional(),
 
   partnerDni: z
@@ -132,6 +134,7 @@ export const coupleSchema = baseSchema.extend({
 
   partnerBirthDate: z
     .string()
+    .min(1, "La fecha de nacimiento de la pareja es obligatoria")
     .optional()
     .refine((date: string | undefined) => !date || (
       !isNaN(new Date(date).getTime()) &&
@@ -148,14 +151,29 @@ export const coupleSchema = baseSchema.extend({
     .max(10, "No puede ser mayor que 10")
     .optional(),
 
-}).refine(data => {
+}).superRefine((data, ctx) => {
   // Si tiene pareja, los campos de la pareja son obligatorios
   if (data.hasPartner) {
-    return data.partnerFirstName && data.partnerLastName &&
-      data.partnerDni && data.partnerBirthDate;
+    if (!data.partnerFirstName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "El nombre de la pareja es obligatorio",
+        path: ["partnerFirstName"],
+      });
+    }
+    if (!data.partnerLastName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "El apellido de la pareja es obligatorio",
+        path: ["partnerLastName"],
+      });
+    }
+    if (!data.partnerBirthDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "La fecha de nacimiento de la pareja es obligatoria",
+        path: ["partnerBirthDate"],
+      });
+    }
   }
-  return true;
-}, {
-  message: "Los datos de la pareja son obligatorios cuando selecciona que viene acompañado",
-  path: ["partnerFirstName"],
 })
